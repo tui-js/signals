@@ -1,7 +1,7 @@
 import { $access, $value, BaseSignal } from "./base.ts";
 import { DependantSignal } from "./dependant.ts";
 
-export function signal<T>(value: T) {
+export function signal<T>(value: T): Signal<T> {
     return new Signal(value);
 }
 
@@ -21,7 +21,7 @@ export class Signal<T> extends BaseSignal<T> {
         return this.set(modifier(this[$value]));
     }
 
-    derive<Y>(computation: (value: T) => Y) {
+    derive<Y>(computation: (value: T) => Y): DependantSignal<Y> {
         const derived = new DependantSignal(
             computation(this[$value]),
             () => {

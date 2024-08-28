@@ -1,7 +1,7 @@
 import { BaseSignal, type SideEffect } from "./base.ts";
 
 export class DependantSignal<T> extends BaseSignal<T> {
-    dependencies = new Set<BaseSignal>();
+    dependencies: Set<BaseSignal> = new Set();
     sideEffect: SideEffect;
 
     constructor(value: T, sideEffect: SideEffect) {

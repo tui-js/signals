@@ -3,11 +3,11 @@ import { DependantSignal } from "./dependant.ts";
 
 // TODO: Only watch root dependencies
 
-export function computed<T>(computation: () => T) {
+export function computed<T>(computation: () => T): ComputedSignal<T> {
     return new ComputedSignal(computation);
 }
 
-export function effect(effect: () => void) {
+export function effect(effect: () => void): ComputedSignal<void> {
     return new ComputedSignal(effect);
 }
 
