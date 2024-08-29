@@ -2,6 +2,7 @@ import { $access, $value, BaseSignal } from "./base.ts";
 import { DependantSignal } from "./dependant.ts";
 
 // TODO: Only watch root dependencies
+// TODO: computed([a, b], (a, b) => ...)
 
 export function computed<T>(computation: () => T): ComputedSignal<T> {
     return new ComputedSignal(computation);

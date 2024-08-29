@@ -9,7 +9,7 @@ export class Signal<T> extends BaseSignal<T> {
     set(value: T): this {
         BaseSignal.activeSignal?.[$access]?.(this);
 
-        if (value === this[$value]) return this;
+        if (typeof value !== "object" && value === this[$value]) return this;
 
         this[$value] = value;
         this.updateDependants();
