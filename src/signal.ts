@@ -22,13 +22,15 @@ export class Signal<T> extends BaseSignal<T> {
     }
 
     derive<Y>(computation: (value: T) => Y): DependantSignal<Y> {
-        const derived = new DependantSignal(
-            computation(this[$value]),
-            () => {
-                derived[$value] = computation(this[$value]);
-            },
-        );
-
+        const derived = new DependantSignal(computation(this[$value]), () => {
+            derived[$value] = computation(this[$value]);
+            derived.updateDependants();
+        });
+        derived.dependencies.add(this);
+        this.dependants ??= new Set();
+        this.dependants.add(derived);
+        this.sideEffects ??= new Set();
+        this.sideEffects.add(derived.sideEffect);
         return derived;
     }
 }
