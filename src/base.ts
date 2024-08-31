@@ -55,6 +55,10 @@ export class BaseSignal<T = unknown> {
         }
     }
 
+    peek(): Readonly<T> {
+        return this[$value];
+    }
+
     get(): T {
         BaseSignal.activeSignal?.[$access]?.(this);
         return this[$value];
