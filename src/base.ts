@@ -22,30 +22,6 @@ export class BaseSignal<T = unknown> {
 
     constructor(value: T) {
         this[$value] = value;
-
-        // TODO: Other objects
-        if (Array.isArray(value)) {
-            const { push, unshift, pop, splice, sort } = value;
-
-            const updateable = <P extends Array<unknown>, R extends unknown>(
-                method: (...args: P) => R,
-            ) => {
-                const newMethod = method.bind(value);
-                return (...args: P) => {
-                    const result = newMethod(...args);
-                    this.updateDependants();
-                    return result;
-                };
-            };
-
-            Object.defineProperties(value, {
-                push: { value: updateable(push) },
-                unshift: { value: updateable(unshift) },
-                pop: { value: updateable(pop) },
-                splice: { value: updateable(splice) },
-                sort: { value: updateable(sort) },
-            });
-        }
     }
 
     updateDependants() {
