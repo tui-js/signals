@@ -2,7 +2,6 @@ import { $access, $value, BaseSignal } from "./base.ts";
 import { DependantSignal } from "./dependant.ts";
 
 // TODO: LazyComputed
-// TODO: Only watch root dependencies
 
 export type SignalValues<T extends BaseSignal[]> = {
     [Key in keyof T]: T[Key] extends BaseSignal<infer Value> ? Value : never;
@@ -35,7 +34,6 @@ export class ComputedSignal<T, D extends BaseSignal[] = []> extends DependantSig
     constructor(computation: () => T);
     constructor(computation: (...args: unknown[]) => T, dependencies?: BaseSignal[]) {
         if (dependencies) {
-            console.log("Has dependencies");
             super(computation(...dependencies.map((dependency) => dependency[$value]!)), () => {
                 this[$value] = computation(
                     ...dependencies.map((dependency) => dependency[$value]!),
@@ -64,6 +62,13 @@ export class ComputedSignal<T, D extends BaseSignal[] = []> extends DependantSig
     }
 
     [$access](signal: BaseSignal): void {
+        if (signal instanceof DependantSignal) {
+            for (const dependency of signal.dependencies) {
+                this[$access](dependency);
+            }
+            return;
+        }
+
         this.dependencies.add(signal);
         signal.dependants ??= new Set();
         signal.dependants.add(this);
