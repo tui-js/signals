@@ -36,6 +36,7 @@ export function shallowObservableArray<T extends unknown[]>(array: T): Observabl
     };
 
     const push = array.push.bind(array);
+    const shift = array.shift.bind(array);
     const unshift = array.unshift.bind(array);
     const pop = array.pop.bind(array);
     const splice = array.splice.bind(array);
@@ -49,6 +50,12 @@ export function shallowObservableArray<T extends unknown[]>(array: T): Observabl
             value(...args: unknown[]) {
                 if (args.length) accessIntermediate();
                 return push(...args);
+            },
+        },
+        shift: {
+            value() {
+                if (array.length) accessIntermediate();
+                return shift();
             },
         },
         unshift: {
