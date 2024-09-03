@@ -9,6 +9,7 @@ export function deepObservableArray<T extends unknown[]>(array: T): ObservableAr
 
     const observable: ObservableArray<T> = brandObservable(array, intermediate);
 
+    // TODO: Consider overwriting methods to reduce the number of unnecessary changes
     return new Proxy(observable, {
         get(target, property, receiver) {
             if (property === Symbol.toStringTag) {
@@ -18,8 +19,9 @@ export function deepObservableArray<T extends unknown[]>(array: T): ObservableAr
             return Reflect.get(target, property, receiver);
         },
         set(target, property, value, receiver) {
-            console.log(target, property, value);
-            return Reflect.set(target, property, value, receiver);
+            const changed = Reflect.set(target, property, value, receiver);
+            intermediate.updateDependants();
+            return changed;
         },
     });
 }
