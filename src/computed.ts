@@ -1,6 +1,7 @@
 import { $access, $value, BaseSignal } from "./base.ts";
 import { DependantSignal } from "./dependant.ts";
 
+// TODO: Support observables as explicit dependencies
 // TODO: LazyComputed
 
 export type SignalValues<T extends BaseSignal[]> = {

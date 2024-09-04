@@ -2,6 +2,7 @@ import { computed, deepObservableArray, shallowObservableArray, signal } from ".
 import { assertEquals } from "jsr:@std/assert";
 import { effect } from "../src/computed.ts";
 import { $intermediate } from "../src/observables/shared.ts";
+import { observableObject } from "../src/observables/object.ts";
 
 Deno.test("mod.ts", async (t) => {
     await t.step("Signal", () => {
@@ -49,6 +50,43 @@ Deno.test("mod.ts", async (t) => {
     });
 
     await t.step("Observables", async (t) => {
+        await t.step("observableObject", () => {
+            const observable = observableObject({
+                uno: 1,
+                dos: 2,
+                tres: 3,
+            });
+
+            assertEquals(observable.uno, 1);
+            assertEquals(observable.dos, 2);
+            assertEquals(observable.tres, 3);
+
+            const twice = computed(() => {
+                // Keep in mind it creates a new object every time
+                // It's definitely an idea to explore to see
+                // if making objects like this just once is a good idea
+                return {
+                    uno: observable.uno * 2,
+                    dos: observable.dos * 2,
+                    tres: observable.tres * 2,
+                };
+            });
+
+            assertEquals(twice.get(), {
+                uno: 2,
+                dos: 4,
+                tres: 6,
+            });
+
+            observable.uno = 2;
+
+            assertEquals(twice.get(), {
+                uno: 4,
+                dos: 4,
+                tres: 6,
+            });
+        });
+
         await t.step("deepObservableArray", () => {
             const observable = deepObservableArray<number[]>([]);
 
