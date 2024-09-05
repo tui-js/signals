@@ -2,12 +2,12 @@ import { $access, $value, BaseSignal } from "./base.ts";
 import { DependantSignal } from "./dependant.ts";
 
 // TODO: Support observables as explicit dependencies
-// TODO: LazyComputed
 
 export type SignalValues<T extends BaseSignal[]> = {
     [Key in keyof T]: T[Key] extends BaseSignal<infer Value> ? Value : never;
 };
 
+// TODO: Try to make types more readable because its ugh
 export function computed<T>(computation: () => T): ComputedSignal<T>;
 export function computed<T, const D extends BaseSignal[]>(
     dependencies: D,
@@ -33,14 +33,15 @@ export function effect(effect: () => void): ComputedSignal<void> {
 export class ComputedSignal<T, D extends BaseSignal[] = []> extends DependantSignal<T> {
     constructor(computation: (...args: SignalValues<D>) => T, dependencies?: D);
     constructor(computation: () => T);
-    constructor(computation: (...args: unknown[]) => T, dependencies?: BaseSignal[]) {
+    constructor(computation: (...args: unknown[]) => T, dependencies?: D) {
         if (dependencies) {
-            super(computation(...dependencies.map((dependency) => dependency[$value]!)), () => {
-                this[$value] = computation(
-                    ...dependencies.map((dependency) => dependency[$value]!),
-                );
-                this.updateDependants();
-            });
+            super(
+                computation(...dependencies.map((dependency) => dependency[$value]!)),
+                () => {
+                    this[$value] = computation(...dependencies.map((dependency) => dependency[$value]!));
+                    this.updateDependants();
+                },
+            );
 
             for (const dependency of dependencies) {
                 this[$access](dependency);
