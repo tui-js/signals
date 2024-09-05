@@ -1,22 +1,22 @@
 import { $access, $value, BaseSignal } from "./base.ts";
 
 export function signal<T>(value: T): Signal<T> {
-    return new Signal(value);
+  return new Signal(value);
 }
 
 export class Signal<T> extends BaseSignal<T> {
-    set(value: T): this {
-        BaseSignal.activeSignal?.[$access]?.(this);
+  set(value: T): this {
+    BaseSignal.activeSignal?.[$access]?.(this);
 
-        if (this[$value] === value) return this;
+    if (this[$value] === value) return this;
 
-        this[$value] = value;
-        this.updateDependants();
+    this[$value] = value;
+    this.updateDependants();
 
-        return this;
-    }
+    return this;
+  }
 
-    modify(modifier: (value: T) => T): this {
-        return this.set(modifier(this[$value]));
-    }
+  modify(modifier: (value: T) => T): this {
+    return this.set(modifier(this[$value]));
+  }
 }
