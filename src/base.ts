@@ -6,12 +6,11 @@ export type SideEffect = () => void;
 export type MaybeSignal<T> = T | BaseSignal<T>;
 
 export function getValue<T>(maybeSignal: MaybeSignal<T>): T {
-    return typeof maybeSignal === "object" && maybeSignal instanceof BaseSignal
-        ? maybeSignal.get()
-        : maybeSignal;
+    return maybeSignal instanceof BaseSignal ? maybeSignal.get() : maybeSignal;
 }
 
-export class BaseSignal<T = unknown> {
+// deno-lint-ignore no-explicit-any
+export class BaseSignal<T = any> {
     static activeSignal?: BaseSignal;
 
     protected [$value]: T;
