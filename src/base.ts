@@ -30,7 +30,7 @@ export class BaseSignal<T = any> {
     }
   }
 
-  peek(): Readonly<T> {
+  peek(): T {
     return this[$value];
   }
 
