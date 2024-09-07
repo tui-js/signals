@@ -71,9 +71,9 @@ export function shallowObservableArray<T extends unknown[]>(array: T): Observabl
       },
     },
     splice: {
-      value(start: number, deleteCount?: number, ...items: unknown[]) {
-        if (deleteCount || items.length) accessIntermediate();
-        return splice(start, deleteCount!, ...items);
+      value(...args: Parameters<typeof splice>) {
+        if (args[1] || args.length > 2) accessIntermediate();
+        return splice(...args);
       },
     },
     sort: {
