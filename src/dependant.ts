@@ -9,7 +9,7 @@ export class DependantSignal<T> extends BaseSignal<T> {
     this.sideEffect = sideEffect;
   }
 
-  [Symbol.dispose]() {
+  override [Symbol.dispose]() {
     super[Symbol.dispose]();
 
     for (const { sideEffects, dependants } of this.dependencies) {

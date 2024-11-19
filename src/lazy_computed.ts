@@ -94,7 +94,7 @@ export class LazyComputedSignal<T, D extends BaseSignal[] = []> extends Dependan
     }
   }
 
-  [$access](signal: BaseSignal): void {
+  override [$access](signal: BaseSignal): void {
     if (signal instanceof DependantSignal) {
       for (const dependency of signal.dependencies) {
         this[$access](dependency);
