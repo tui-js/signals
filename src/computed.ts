@@ -3,13 +3,15 @@ import { DependantSignal } from "./dependant.ts";
 
 // TODO: Support observables as explicit dependencies
 
-export type SignalValues<T extends BaseSignal[]> = {
-  [Key in keyof T]: T[Key] extends BaseSignal<infer Value> ? Value : never;
+export type SignalValues<T extends Nullable<BaseSignal>[]> = {
+  [Key in keyof T]: T[Key] extends BaseSignal<infer Value> ? Value : undefined;
 };
+
+type Nullable<V> = V | undefined | null;
 
 // TODO: Try to make types more readable because its ugh
 export function computed<T>(computation: () => T): ComputedSignal<T>;
-export function computed<T, const D extends BaseSignal[]>(
+export function computed<T, const D extends Nullable<BaseSignal>[]>(
   dependencies: D,
   computation: (...args: SignalValues<D>) => T,
 ): ComputedSignal<T, D>;
@@ -30,21 +32,21 @@ export function effect(effect: () => void): ComputedSignal<void> {
   return new ComputedSignal(effect);
 }
 
-export class ComputedSignal<T, D extends BaseSignal[] = []> extends DependantSignal<T> {
+export class ComputedSignal<T, D extends Nullable<BaseSignal>[] = []> extends DependantSignal<T> {
   constructor(computation: (...args: SignalValues<D>) => T, dependencies?: D);
   constructor(computation: () => T);
   constructor(computation: (...args: unknown[]) => T, dependencies?: D) {
     if (dependencies) {
       super(
-        computation(...dependencies.map((dependency) => dependency[$value]!)),
+        computation(...dependencies.map((dependency) => dependency?.[$value]!)),
         () => {
-          this[$value] = computation(...dependencies.map((dependency) => dependency[$value]!));
+          this[$value] = computation(...dependencies.map((dependency) => dependency?.[$value]!));
           this.updateDependants();
         },
       );
 
       for (const dependency of dependencies) {
-        this[$access](dependency);
+        if (dependency) this[$access](dependency);
       }
       return;
     }
